@@ -1,10 +1,14 @@
 {
-  "version": "1.0.0-*",
-  "description": "MakingSense.AspNet.Documentation Class Library",
-  "authors": [ "windows" ],
-  "tags": [ "" ],
-  "projectUrl": "",
-  "licenseUrl": "",
+  "version": "0.1.0-beta7-*",
+  "description": "MakingSense.AspNet.Documentation Middleware",
+  "authors": [ "MakingSense" ],
+  "tags": [ "markdown", "ASP.NET 5", "vnext", "documentation" ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/MakingSense/aspnet-documentation-middleware"
+  },
+  "projectUrl": "https://github.com/MakingSense/aspnet-documentation-middleware",
+  "licenseUrl": "http://www.gnu.org/licenses/lgpl.html",
   "frameworks": {
     "dnx451": {
     },
