@@ -23,7 +23,7 @@ namespace MakingSense.AspNet.Documentation
 			ContentStream = null;
 			if (stream != null)
 			{
-				ContentStream.Dispose();
+				stream.Dispose();
 			}
 		}
 	}
