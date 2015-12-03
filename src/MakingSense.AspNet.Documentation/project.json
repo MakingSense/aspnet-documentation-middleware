@@ -1,5 +1,5 @@
 {
-  "version": "0.1.0-beta7-*",
+  "version": "0.1.0-beta8-*",
   "description": "MakingSense.AspNet.Documentation Middleware",
   "authors": [ "MakingSense" ],
   "tags": [ "markdown", "ASP.NET 5", "vnext", "documentation" ],
@@ -14,25 +14,21 @@
     },
     "dnxcore50": {
       "dependencies": {
-        "Microsoft.CSharp": "4.0.1-beta-23225",
-        "System.Collections": "4.0.11-beta-23225",
-        "System.Linq": "4.0.1-beta-23225",
-        "System.Runtime": "4.0.21-beta-23225",
-        "System.Threading": "4.0.11-beta-23225"
+        "Microsoft.CSharp": "4.0.1-beta-23409",
+        "System.Collections": "4.0.11-beta-23409",
+        "System.Linq": "4.0.1-beta-23409",
+        "System.Runtime": "4.0.21-beta-23409",
+        "System.Threading": "4.0.11-beta-23409"
       }
     }
   },
   "dependencies": {
-    "CommonMark.NET": "0.9.1",
-    "Microsoft.AspNet.FileProviders.Abstractions": "1.0.0-beta7",
-    "Microsoft.AspNet.FileProviders.Physical": "1.0.0-beta7",
-    "Microsoft.AspNet.Hosting.Abstractions": "1.0.0-beta7",
-    "Microsoft.AspNet.Http.Extensions": "1.0.0-beta7",
-    "Microsoft.Dnx.Runtime.Abstractions": "1.0.0-beta7",
-    "Microsoft.Framework.Logging.Abstractions": "1.0.0-beta7",
-    "Microsoft.Framework.NotNullAttribute.Sources": {
-      "type": "build",
-      "version": "1.0.0-beta7"
-    }
+    "CommonMark.NET": "0.10.0",
+    "Microsoft.AspNet.FileProviders.Abstractions": "1.0.0-beta8",
+    "Microsoft.AspNet.FileProviders.Physical": "1.0.0-beta8",
+    "Microsoft.AspNet.Hosting.Abstractions": "1.0.0-beta8",
+    "Microsoft.AspNet.Http.Extensions": "1.0.0-beta8",
+    "Microsoft.Dnx.Runtime.Abstractions": "1.0.0-beta8",
+    "Microsoft.Framework.Logging.Abstractions": "1.0.0-beta8"
   }
 }
