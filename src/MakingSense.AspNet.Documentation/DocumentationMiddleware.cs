@@ -110,7 +110,8 @@ namespace MakingSense.AspNet.Documentation
 				ApplyResponseHeaders(context.Response, handler);
 				await ApplyResponseContent(context.Response, handler);
 
-
+				// Do not continue with the rest of middlewares
+				return;
 			}
 
 			await _next(context);
