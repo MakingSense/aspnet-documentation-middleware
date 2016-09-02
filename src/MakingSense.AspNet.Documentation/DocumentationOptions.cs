@@ -1,16 +1,16 @@
-﻿using Microsoft.AspNet.FileProviders;
-using Microsoft.AspNet.Hosting;
-using Microsoft.AspNet.Http;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.FileProviders;
 
 namespace MakingSense.AspNet.Documentation
 {
-    public class DocumentationOptions
-    {
+	public class DocumentationOptions
+	{
 		/// <summary>
 		/// The relative request path that maps to static resources.
 		/// </summary>

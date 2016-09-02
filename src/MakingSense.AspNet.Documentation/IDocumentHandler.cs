@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNet.FileProviders;
-using Microsoft.AspNet.Http;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
