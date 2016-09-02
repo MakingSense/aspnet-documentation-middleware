@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.FileProviders;
 
-namespace MakingSense.AspNet.Documentation
+namespace MakingSense.AspNetCore.Documentation
 {
 	public abstract class BaseDocumentHandler : IDocumentHandler
 	{

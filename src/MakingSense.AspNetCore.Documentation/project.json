@@ -1,6 +1,6 @@
 {
   "version": "1.0.0-*",
-  "description": "MakingSense.AspNet.Documentation Middleware",
+  "description": "MakingSense.AspNetCore.Documentation Middleware",
   "authors": [ "MakingSense" ],
   "packOptions": {
     "tags": [ "markdown", "ASP.NET 5", "vnext", "documentation" ],

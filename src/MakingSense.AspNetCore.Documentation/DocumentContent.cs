@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace MakingSense.AspNet.Documentation
+namespace MakingSense.AspNetCore.Documentation
 {
 	public class DocumentContent : IDisposable
 	{

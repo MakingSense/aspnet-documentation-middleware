@@ -1,5 +1,5 @@
 using System;
-using MakingSense.AspNet.Documentation;
+using MakingSense.AspNetCore.Documentation;
 using Microsoft.Framework.Internal;
 
 namespace Microsoft.AspNetCore.Builder

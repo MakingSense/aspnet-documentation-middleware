@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Text;
 using Microsoft.Extensions.FileProviders;
 
-namespace MakingSense.AspNet.Documentation
+namespace MakingSense.AspNetCore.Documentation
 {
 	public class MarkdownDocumentHandler : BaseDocumentHandler
 	{

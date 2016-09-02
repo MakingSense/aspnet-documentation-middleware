@@ -14,10 +14,10 @@ artifacts:
  - path: '**\*.nupkg'
 
 build_script:
-- cmd: dotnet build src/MakingSense.AspNet.Documentation
+- cmd: dotnet build src/MakingSense.AspNetCore.Documentation
 
 after_build:
-- cmd: dotnet pack src/MakingSense.AspNet.Documentation
+- cmd: dotnet pack src/MakingSense.AspNetCore.Documentation
 
 notifications:
   - provider: Slack
