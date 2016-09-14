@@ -1,8 +1,8 @@
 using System;
+using MakingSense.AspNetCore.Documentation;
 using Microsoft.Framework.Internal;
-using MakingSense.AspNet.Documentation;
 
-namespace Microsoft.AspNet.Builder
+namespace Microsoft.AspNetCore.Builder
 {
 	public static class DocumentationMiddlewareAppBuilderExtensions
 	{

@@ -4,9 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Text;
-using Microsoft.AspNet.FileProviders;
+using Microsoft.Extensions.FileProviders;
 
-namespace MakingSense.AspNet.Documentation
+namespace MakingSense.AspNetCore.Documentation
 {
 	public class MarkdownDocumentHandler : BaseDocumentHandler
 	{

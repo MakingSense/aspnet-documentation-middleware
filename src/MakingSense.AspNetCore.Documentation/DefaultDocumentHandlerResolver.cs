@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNet.FileProviders;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.FileProviders;
 
-namespace MakingSense.AspNet.Documentation
+namespace MakingSense.AspNetCore.Documentation
 {
 	public class DefaultDocumentHandlerResolver : IDocumentHandlerResolver
 	{

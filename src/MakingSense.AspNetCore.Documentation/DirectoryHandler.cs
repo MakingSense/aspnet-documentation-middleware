@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNet.Http;
-using Microsoft.AspNet.FileProviders;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.FileProviders;
 
-namespace MakingSense.AspNet.Documentation
+namespace MakingSense.AspNetCore.Documentation
 {
 	public class DirectoryHandler : IDocumentHandler
 	{
@@ -36,8 +36,8 @@ namespace MakingSense.AspNet.Documentation
 		{
 			_fileProvider = fileProvider;
 			_path = path;
-			_extensionsOptionsRegex = new Regex(String.Join("|", options.DirectoryBrowsingStripExtensions.Select(i => String.Concat(i.FirstOrDefault()=='.'?@"\":"",i,@"$"))));
-            _directoryOptions = options;
+			_extensionsOptionsRegex = new Regex(String.Join("|", options.DirectoryBrowsingStripExtensions.Select(i => String.Concat(i.FirstOrDefault() == '.' ? @"\" : "", i, @"$"))));
+			_directoryOptions = options;
 			CanHandleRequest = _fileProvider.GetDirectoryContents(_path).Exists;
 		}
 
@@ -64,7 +64,7 @@ namespace MakingSense.AspNet.Documentation
 
 		private string RemoveExtension(string filePath)
 		{
-			return  _extensionsOptionsRegex.Replace(filePath, String.Empty);
+			return _extensionsOptionsRegex.Replace(filePath, String.Empty);
 		}
 	}
 }
