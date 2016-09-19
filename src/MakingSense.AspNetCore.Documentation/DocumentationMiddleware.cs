@@ -152,7 +152,14 @@ namespace MakingSense.AspNetCore.Documentation
 
 		private bool TryGetDocumentsSubpath(HttpRequest request, out PathString subpath)
 		{
-			return request.Path.StartsWithSegments(_options.RequestPath, out subpath);
+			if (!request.Path.StartsWithSegments(_options.RequestPath, out subpath))
+			{
+				return false;
+			}
+
+			subpath = _options.FileProviderSubPath.Add(subpath);
+
+			return true;
 		}
 
 	}
