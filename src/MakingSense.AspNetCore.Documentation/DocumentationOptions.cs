@@ -45,8 +45,7 @@ namespace MakingSense.AspNetCore.Documentation
 		{
 			if (FileProvider == null)
 			{
-				var root = Path.GetFullPath(Path.Combine(hostingEnv.WebRootPath, RequestPath.Value.Trim(new[] { '/', '\\' })));
-				FileProvider = new PhysicalFileProvider(root);
+				FileProvider = hostingEnv.WebRootFileProvider;
 			}
 		}
 	}
