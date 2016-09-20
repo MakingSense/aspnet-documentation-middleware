@@ -12,9 +12,14 @@ namespace MakingSense.AspNetCore.Documentation
 	public class DocumentationOptions
 	{
 		/// <summary>
-		/// The relative request path that maps to static resources.
+		/// The relative URL path that maps to FileProvider resources.
 		/// </summary>
 		public PathString RequestPath { get; set; } = PathString.Empty;
+
+		/// <summary>
+		/// The relative FileProvider path that maps from URL.
+		/// </summary>
+		public PathString FileProviderSubPath { get; set; } = PathString.Empty;
 
 		/// <summary>
 		/// The file system used to locate resources
@@ -45,8 +50,7 @@ namespace MakingSense.AspNetCore.Documentation
 		{
 			if (FileProvider == null)
 			{
-				var root = Path.GetFullPath(Path.Combine(hostingEnv.WebRootPath, RequestPath.Value.Trim(new[] { '/', '\\' })));
-				FileProvider = new PhysicalFileProvider(root);
+				FileProvider = hostingEnv.WebRootFileProvider;
 			}
 		}
 	}
