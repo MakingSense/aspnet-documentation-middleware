@@ -30,8 +30,8 @@ namespace MakingSense.AspNetCore.Documentation
 		private readonly IHostingEnvironment _hostingEnv;
 		private readonly DocumentationOptions _options;
 		private readonly IDocumentHandlerResolver _documentHandlerResolver;
-		private string _layoutHead;
-		private string _layoutTail;
+		private byte[] _layoutHead;
+		private byte[] _layoutTail;
 
 		public DocumentationMiddleware(
 			[NotNull] RequestDelegate next,
@@ -66,8 +66,8 @@ namespace MakingSense.AspNetCore.Documentation
 				layoutContent = DEFAULT_LAYOUT;
 			}
 			var contentMarkIndex = layoutContent.IndexOf(CONTENT_MARK);
-			_layoutHead = layoutContent.Substring(0, contentMarkIndex);
-			_layoutTail = layoutContent.Substring(contentMarkIndex + CONTENT_MARK.Length);
+			_layoutHead = Encoding.UTF8.GetBytes(layoutContent.Substring(0, contentMarkIndex));
+			_layoutTail = Encoding.UTF8.GetBytes(layoutContent.Substring(contentMarkIndex + CONTENT_MARK.Length));
 		}
 
 		public async Task Invoke(HttpContext context)
@@ -118,15 +118,12 @@ namespace MakingSense.AspNetCore.Documentation
 
 		private async Task ApplyResponseContent(HttpResponse response, IDocumentHandler handler)
 		{
-			//TODO: update response.ContentLength
-			//https://github.com/aspnet/vsweb-docs/blob/aa6db2a87ed91214509382684d0a093945539dc8/src/app_code/PageSystem.cs#L73
-
 			using (var content = handler.Open())
 			{
 				response.ContentLength = _layoutHead.Length + content.Length + _layoutTail.Length;
-				await response.Body.WriteAsync(_layoutHead);
+				await response.Body.WriteAsync(_layoutHead, 0, _layoutHead.Length);
 				await content.ContentStream.CopyToAsync(response.Body);
-				await response.Body.WriteAsync(_layoutTail);
+				await response.Body.WriteAsync(_layoutTail, 0, _layoutTail.Length);
 			}
 		}
 
