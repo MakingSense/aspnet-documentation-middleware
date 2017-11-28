@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Framework.Internal;
+using System.Text.RegularExpressions;
 
 namespace MakingSense.AspNetCore.Documentation
 {
@@ -32,6 +33,7 @@ namespace MakingSense.AspNetCore.Documentation
 		private readonly IDocumentHandlerResolver _documentHandlerResolver;
 		private byte[] _layoutHead;
 		private byte[] _layoutTail;
+		private Regex _langPatternRegex = new Regex(@"^(\/([a-zA-Z][a-zA-Z]))?(\/(.*))?$", RegexOptions.IgnoreCase);
 
 		public DocumentationMiddleware(
 			[NotNull] RequestDelegate next,
@@ -73,14 +75,18 @@ namespace MakingSense.AspNetCore.Documentation
 		public async Task Invoke(HttpContext context)
 		{
 			PathString subpath;
+			string lang;
+
 			if (context.Request.IsAGetRequest()
-				&& TryGetDocumentsSubpath(context.Request, out subpath))
+				&& TryGetDocumentsSubpathAndLanguage(context.Request, out subpath, out lang))
 			{
 				bool isDirectory;
 				string filePath = GetFilePath(subpath, out isDirectory);
+				lang = string.IsNullOrEmpty(lang) ? _options.DefaultLanguage : lang;
 
 				IDocumentHandler handler;
-				var foundHandler = _documentHandlerResolver.TryResolveHandler(_options.FileProvider, filePath, out handler);
+				var foundHandler = (lang != null && _documentHandlerResolver.TryResolveHandler(_options.FileProvider, filePath + $".{lang}", out handler))
+					|| _documentHandlerResolver.TryResolveHandler(_options.FileProvider, filePath, out handler);
 				if ((foundHandler || _options.DirectoryOptions.EnableDirectoryBrowsing) && isDirectory && !context.Request.Path.EndsInSlash())
 				{
 					// If the path matches a directory but does not end in a slash, redirect to add the slash.
@@ -147,14 +153,19 @@ namespace MakingSense.AspNetCore.Documentation
 				: subpath;
 		}
 
-		private bool TryGetDocumentsSubpath(HttpRequest request, out PathString subpath)
+		private bool TryGetDocumentsSubpathAndLanguage(HttpRequest request, out PathString subpath, out string lang)
 		{
+			lang = null;
+
 			if (!request.Path.StartsWithSegments(_options.RequestPath, out subpath))
 			{
 				return false;
 			}
 
-			subpath = _options.FileProviderSubPath.Add(subpath);
+			var match = _langPatternRegex.Match(subpath);
+
+			lang = match.Groups[2].Value;
+			subpath = _options.FileProviderSubPath.Add(match.Groups[3].Value);
 
 			return true;
 		}

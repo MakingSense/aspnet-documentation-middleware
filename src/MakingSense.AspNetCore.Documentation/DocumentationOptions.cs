@@ -46,6 +46,8 @@ namespace MakingSense.AspNetCore.Documentation
 
 		public DirectoryOptions DirectoryOptions { get; set; } = new DirectoryOptions();
 
+		public string DefaultLanguage { get; set; }
+
 		internal void ResolveFileProvider(IHostingEnvironment hostingEnv)
 		{
 			if (FileProvider == null)
