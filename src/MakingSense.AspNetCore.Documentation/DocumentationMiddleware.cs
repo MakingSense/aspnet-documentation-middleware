@@ -34,6 +34,8 @@ namespace MakingSense.AspNetCore.Documentation
 		private readonly IDocumentHandlerResolver _documentHandlerResolver;
 		private byte[] _defaultLayoutHead;
 		private byte[] _defaultLayoutTail;
+		private Dictionary<string, byte[]> _layoutHeadsByLanguage = new Dictionary<string, byte[]>();
+		private Dictionary<string, byte[]> _layoutTailsByLanguage = new Dictionary<string, byte[]>();
 		private Regex _langPatternRegex = new Regex(@"^(\/([a-zA-Z][a-zA-Z]))?(\/(.*))?$", RegexOptions.IgnoreCase);
 		private readonly IFileInfo _notFoundHtmlFile;
 
@@ -65,7 +67,20 @@ namespace MakingSense.AspNetCore.Documentation
 
 			if(layoutFile.Exists)
 			{
-				ParseLayoutFile(layoutFile, out _defaultLayoutHead, out _defaultLayoutTail);				
+				ParseLayoutFile(layoutFile, out _defaultLayoutHead, out _defaultLayoutTail);
+
+				if (_options.LayoutFilePath != null)
+				{
+					var layoutFilesPerLanguage = GetFileInfoByLanguage(_options.LayoutFilePath);
+
+					foreach (var fileByLang in layoutFilesPerLanguage)
+					{
+						ParseLayoutFile(fileByLang.Value, out byte[] head, out byte[] tail);
+
+						_layoutHeadsByLanguage.Add(fileByLang.Key, head);
+						_layoutTailsByLanguage.Add(fileByLang.Key, tail);
+					}
+				}
 			}
 			else
 			{
@@ -135,7 +150,7 @@ namespace MakingSense.AspNetCore.Documentation
 				}
 
 				ApplyResponseHeaders(context.Response, handler);
-				await ApplyResponseContent(context.Response, handler);
+				await ApplyResponseContent(context.Response, handler, lang);
 
 				// Do not continue with the rest of middlewares
 				return;
@@ -144,10 +159,17 @@ namespace MakingSense.AspNetCore.Documentation
 			await _next(context);
 		}
 
-		private async Task ApplyResponseContent(HttpResponse response, IDocumentHandler handler)
+		private async Task ApplyResponseContent(HttpResponse response, IDocumentHandler handler, string lang)
 		{
-			var layoutHead = _defaultLayoutHead;
-			var layoutTail = _defaultLayoutTail;
+			var layoutHead = lang != null
+				&& _layoutHeadsByLanguage.ContainsKey(lang)
+				? _layoutHeadsByLanguage[lang]
+				: _defaultLayoutHead;
+
+			var layoutTail = lang != null
+				&& _layoutTailsByLanguage.ContainsKey(lang)
+				? _layoutTailsByLanguage[lang]
+				: _defaultLayoutTail;
 
 			using (var content = handler.Open())
 			{
@@ -193,6 +215,26 @@ namespace MakingSense.AspNetCore.Documentation
 			subpath = _options.FileProviderSubPath.Add(match.Groups[3].Value);
 
 			return true;
+		}
+
+		private Dictionary<string, IFileInfo> GetFileInfoByLanguage(string path)
+		{
+			var fileInfoByLang = new Dictionary<string, IFileInfo>();
+
+			foreach (var lang in _options.SupportedLanguages)
+			{
+				var pathWithoutExt = path.Substring(0, path.LastIndexOf('.'));
+				var ext = path.Substring(path.LastIndexOf('.'));
+
+				var fileInfo = _options.FileProvider.GetFileInfo(pathWithoutExt + $".{lang}" + ext);
+
+				if (fileInfo.Exists)
+				{
+					fileInfoByLang.Add(lang, fileInfo);
+				}
+			}
+
+			return fileInfoByLang;
 		}
 
 	}

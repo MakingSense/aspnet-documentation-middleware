@@ -54,6 +54,11 @@ namespace MakingSense.AspNetCore.Documentation
 
 		public string DefaultLanguage { get; set; }
 
+		/// <summary>
+		/// Use this property among LayoutFilePath.
+		/// </summary>
+		public string[] SupportedLanguages { get; set; } = new string[] { };
+
 		internal void ResolveFileProvider(IHostingEnvironment hostingEnv)
 		{
 			if (FileProvider == null)
