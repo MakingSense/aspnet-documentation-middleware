@@ -52,3 +52,25 @@ Before merge any PR, `version` property in `project.json` should be updated usin
 I wish to use [GitVersion](http://gitversion.readthedocs.org/en/stable/) but it seems that it is [not enough mature for DNX projects](https://github.com/GitTools/GitVersion/issues/647).
 
 Maybe we could upload only _definitive_ versions to _NuGet Gallery_ and all versions including _definitive_ and _pre-release_ ones to _MyGet_.
+
+## Multilanguage support
+
+Too add multilanguage support, append two digits language code to the file name before the extension.
+
+Set DefaultLanguage property to add a language fallback for URLs with no language code specified.
+
+**Example:**
+
+```csharp
+    app.UseDocumentation(new DocumentationOptions()
+    {
+        RequestPath = "/docs",
+        DefaultLanguage = "en",
+        ...
+```
+
+```
+    /docs/es/filename   =>  filename.es    (and if not exist)  =>  filename
+    /docs/en/filename   =>  filename.en    (and if not exist)  =>  filename
+    /docs/filename      =>  filename.en    (and if not exist)  =>  filename
+```
