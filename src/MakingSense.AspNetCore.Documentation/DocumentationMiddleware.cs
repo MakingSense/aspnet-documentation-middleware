@@ -32,8 +32,8 @@ namespace MakingSense.AspNetCore.Documentation
 		private readonly IHostingEnvironment _hostingEnv;
 		private readonly DocumentationOptions _options;
 		private readonly IDocumentHandlerResolver _documentHandlerResolver;
-		private byte[] _layoutHead;
-		private byte[] _layoutTail;
+		private byte[] _defaultLayoutHead;
+		private byte[] _defaultLayoutTail;
 		private Regex _langPatternRegex = new Regex(@"^(\/([a-zA-Z][a-zA-Z]))?(\/(.*))?$", RegexOptions.IgnoreCase);
 		private readonly IFileInfo _notFoundHtmlFile;
 
@@ -63,22 +63,35 @@ namespace MakingSense.AspNetCore.Documentation
 			var layoutFile = _options.LayoutFilePath == null && _options.LayoutFile != null ?
 				_options.LayoutFile : _options.FileProvider.GetFileInfo(_options.LayoutFilePath);
 
-			string layoutContent = null;
-			if (layoutFile != null && layoutFile.Exists)
+			if(layoutFile.Exists)
 			{
-				using (var stream = layoutFile.CreateReadStream())
-				using (var reader = new StreamReader(stream))
-				{
-					layoutContent = reader.ReadToEnd();
-				}
+				ParseLayoutFile(layoutFile, out _defaultLayoutHead, out _defaultLayoutTail);				
 			}
 			else
 			{
-				layoutContent = DEFAULT_LAYOUT;
+				GetLayoutHeadAndTail(DEFAULT_LAYOUT, out _defaultLayoutHead, out _defaultLayoutTail);
 			}
-			var contentMarkIndex = layoutContent.IndexOf(CONTENT_MARK);
-			_layoutHead = Encoding.UTF8.GetBytes(layoutContent.Substring(0, contentMarkIndex));
-			_layoutTail = Encoding.UTF8.GetBytes(layoutContent.Substring(contentMarkIndex + CONTENT_MARK.Length));
+
+		}
+
+		private static void ParseLayoutFile(IFileInfo file, out byte[] head, out byte[] tail)
+		{
+			string content = null;
+
+			using (var stream = file.CreateReadStream())
+			using (var reader = new StreamReader(stream))
+			{
+				content = reader.ReadToEnd();
+			}
+
+			GetLayoutHeadAndTail(content, out head, out tail);
+		}
+
+		private static void GetLayoutHeadAndTail(string content, out byte[] head, out byte[] tail)
+		{
+			var contentMarkIndex = content.IndexOf(CONTENT_MARK);
+			head = Encoding.UTF8.GetBytes(content.Substring(0, contentMarkIndex));
+			tail = Encoding.UTF8.GetBytes(content.Substring(contentMarkIndex + CONTENT_MARK.Length));
 		}
 
 		public async Task Invoke(HttpContext context)
@@ -133,12 +146,15 @@ namespace MakingSense.AspNetCore.Documentation
 
 		private async Task ApplyResponseContent(HttpResponse response, IDocumentHandler handler)
 		{
+			var layoutHead = _defaultLayoutHead;
+			var layoutTail = _defaultLayoutTail;
+
 			using (var content = handler.Open())
 			{
-				response.ContentLength = _layoutHead.Length + content.Length + _layoutTail.Length;
-				await response.Body.WriteAsync(_layoutHead, 0, _layoutHead.Length);
+				response.ContentLength = layoutHead.Length + content.Length + layoutTail.Length;
+				await response.Body.WriteAsync(layoutHead, 0, layoutHead.Length);
 				await content.ContentStream.CopyToAsync(response.Body);
-				await response.Body.WriteAsync(_layoutTail, 0, _layoutTail.Length);
+				await response.Body.WriteAsync(layoutTail, 0, layoutTail.Length);
 			}
 		}
 
