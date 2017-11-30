@@ -37,7 +37,8 @@ namespace MakingSense.AspNetCore.Documentation
 		private Dictionary<string, byte[]> _layoutHeadsByLanguage = new Dictionary<string, byte[]>();
 		private Dictionary<string, byte[]> _layoutTailsByLanguage = new Dictionary<string, byte[]>();
 		private Regex _langPatternRegex = new Regex(@"^(\/([a-zA-Z][a-zA-Z]))?(\/(.*))?$", RegexOptions.IgnoreCase);
-		private readonly IFileInfo _notFoundHtmlFile;
+		private IFileInfo _notFoundHtmlFile;
+		private Dictionary<string, IFileInfo> _notFoundHtmlFilesPerLanguage = new Dictionary<string, IFileInfo>();
 
 		public DocumentationMiddleware(
 			[NotNull] RequestDelegate next,
@@ -54,9 +55,7 @@ namespace MakingSense.AspNetCore.Documentation
 			_options = options;
 			_documentHandlerResolver = documentHandlerResolver;
 
-			_notFoundHtmlFile = _options.NotFoundHtmlPath == null && _options.NotFoundHtmlFile != null ?
-				_options.NotFoundHtmlFile : _options.FileProvider.GetFileInfo(_options.NotFoundHtmlPath);
-
+			ConfigureNotFoundFiles();
 			ParseLayout();
 		}
 
@@ -141,7 +140,11 @@ namespace MakingSense.AspNetCore.Documentation
 					}
 					else if (_options.EnableNotFoundHandling)
 					{
-						handler = new NotFoundDocumentHandler(_notFoundHtmlFile);
+						var notFoundFile = lang != null
+							&& _notFoundHtmlFilesPerLanguage.ContainsKey(lang)
+							? _notFoundHtmlFilesPerLanguage[lang]
+							: _notFoundHtmlFile;
+						handler = new NotFoundDocumentHandler(notFoundFile);
 					}
 					else
 					{
@@ -215,6 +218,17 @@ namespace MakingSense.AspNetCore.Documentation
 			subpath = _options.FileProviderSubPath.Add(match.Groups[3].Value);
 
 			return true;
+		}
+
+		private void ConfigureNotFoundFiles()
+		{
+			_notFoundHtmlFile = _options.NotFoundHtmlPath == null && _options.NotFoundHtmlFile != null ?
+				_options.NotFoundHtmlFile : _options.FileProvider.GetFileInfo(_options.NotFoundHtmlPath);
+
+			if (_options.NotFoundHtmlPath != null && _notFoundHtmlFile.Exists)
+			{
+				_notFoundHtmlFilesPerLanguage = GetFileInfoByLanguage(_options.NotFoundHtmlPath);
+			}
 		}
 
 		private Dictionary<string, IFileInfo> GetFileInfoByLanguage(string path)
