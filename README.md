@@ -22,13 +22,12 @@ public class Startup
 
         app.UseStaticFiles();
 
-        var documentationFilesProvider = new PhysicalFileProvider(appEnv.ApplicationBasePath);
         app.UseDocumentation(new DocumentationOptions()
         {
             DefaultFileName = "index",
             RequestPath = "/docs",
-            NotFoundHtmlFile = documentationFilesProvider.GetFileInfo("DocumentationTemplates\\NotFound.html"),
-            LayoutFile = documentationFilesProvider.GetFileInfo("DocumentationTemplates\\Layout.html")
+            NotFoundHtmlPath = "NotFound.html",
+            LayoutFilePath = "Layout.html"
         });
     }
 }
