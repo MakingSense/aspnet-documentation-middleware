@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Framework.Internal;
 using System.Text.RegularExpressions;
+using Microsoft.Extensions.FileProviders;
 
 namespace MakingSense.AspNetCore.Documentation
 {
@@ -34,6 +35,7 @@ namespace MakingSense.AspNetCore.Documentation
 		private byte[] _layoutHead;
 		private byte[] _layoutTail;
 		private Regex _langPatternRegex = new Regex(@"^(\/([a-zA-Z][a-zA-Z]))?(\/(.*))?$", RegexOptions.IgnoreCase);
+		private readonly IFileInfo _notFoundHtmlFile;
 
 		public DocumentationMiddleware(
 			[NotNull] RequestDelegate next,
@@ -49,15 +51,22 @@ namespace MakingSense.AspNetCore.Documentation
 			_hostingEnv = hostingEnv;
 			_options = options;
 			_documentHandlerResolver = documentHandlerResolver;
+
+			_notFoundHtmlFile = _options.NotFoundHtmlPath == null && _options.NotFoundHtmlFile != null ?
+				_options.NotFoundHtmlFile : _options.FileProvider.GetFileInfo(_options.NotFoundHtmlPath);
+
 			ParseLayout();
 		}
 
 		private void ParseLayout()
 		{
+			var layoutFile = _options.LayoutFilePath == null && _options.LayoutFile != null ?
+				_options.LayoutFile : _options.FileProvider.GetFileInfo(_options.LayoutFilePath);
+
 			string layoutContent = null;
-			if (_options.LayoutFile != null && _options.LayoutFile.Exists)
+			if (layoutFile != null && layoutFile.Exists)
 			{
-				using (var stream = _options.LayoutFile.CreateReadStream())
+				using (var stream = layoutFile.CreateReadStream())
 				using (var reader = new StreamReader(stream))
 				{
 					layoutContent = reader.ReadToEnd();
@@ -104,7 +113,7 @@ namespace MakingSense.AspNetCore.Documentation
 					}
 					else if (_options.EnableNotFoundHandling)
 					{
-						handler = new NotFoundDocumentHandler(_options.NotFoundHtmlFile);
+						handler = new NotFoundDocumentHandler(_notFoundHtmlFile);
 					}
 					else
 					{
