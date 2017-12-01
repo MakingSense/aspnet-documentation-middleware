@@ -56,9 +56,9 @@ Maybe we could upload only _definitive_ versions to _NuGet Gallery_ and all vers
 
 Too add multilanguage support, append two digits language code to the file name before the extension.
 
-Set DefaultLanguage property to add a language fallback for URLs with no language code specified.
+Set `DefaultLanguage` property to add a language fallback for URLs with no language code specified.
 
-**Example:**
+**Example**
 
 ```csharp
     app.UseDocumentation(new DocumentationOptions()
@@ -72,4 +72,17 @@ Set DefaultLanguage property to add a language fallback for URLs with no languag
     /docs/es/filename   =>  filename.es    (and if not exist)  =>  filename
     /docs/en/filename   =>  filename.en    (and if not exist)  =>  filename
     /docs/filename      =>  filename.en    (and if not exist)  =>  filename
+```
+
+**Layout transalation**
+
+To enable layout and not found files translation, set `SupportedLanguages` property along with `LayoutFilePath` and `NotFoundHtmlPath`.
+
+```csharp
+    app.UseDocumentation(new DocumentationOptions()
+    {
+        NotFoundHtmlPath = "NotFound.html",
+        LayoutFilePath = "Layout.html",
+        SupportedLanguages = new string[] { "en", "es" },
+        ...
 ```
