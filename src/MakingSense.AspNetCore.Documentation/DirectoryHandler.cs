@@ -24,6 +24,8 @@ namespace MakingSense.AspNetCore.Documentation
 
 		private Regex _extensionsOptionsRegex;
 
+		private Regex _translationFileRegex = new Regex(@"^(.*)(\.[a-zA-Z][a-zA-Z])$");
+
 		private DirectoryOptions _directoryOptions;
 
 		public class DirectoryEntry
@@ -43,7 +45,7 @@ namespace MakingSense.AspNetCore.Documentation
 
 		public DocumentContent Open()
 		{
-			var directoryEntries = _fileProvider.GetDirectoryContents(_path).Select(x => new { Name = RemoveExtension(x.Name), IsDirectory = x.IsDirectory });
+			var directoryEntries = _fileProvider.GetDirectoryContents(_path).Where(x => !IsTranslationFile(x.Name)).Select(x => new { Name = RemoveExtension(x.Name), IsDirectory = x.IsDirectory });
 
 			var htmlListItems = directoryEntries.Select(x => _directoryOptions.DirectoryListItemTemplate.Replace("{href}", x.Name + (x.IsDirectory ? "/" : "")).Replace("{name}", x.Name + (x.IsDirectory ? "/" : "")));
 			var content = GetHtmlContent(htmlListItems);
@@ -65,6 +67,11 @@ namespace MakingSense.AspNetCore.Documentation
 		private string RemoveExtension(string filePath)
 		{
 			return _extensionsOptionsRegex.Replace(filePath, String.Empty);
+		}
+
+		private bool IsTranslationFile(string filePath)
+		{
+			return _translationFileRegex.IsMatch(RemoveExtension(filePath));
 		}
 	}
 }
