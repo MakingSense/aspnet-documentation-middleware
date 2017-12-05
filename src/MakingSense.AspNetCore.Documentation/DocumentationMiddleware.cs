@@ -140,11 +140,14 @@ namespace MakingSense.AspNetCore.Documentation
 					}
 					else if (_options.EnableNotFoundHandling)
 					{
-						var notFoundFile = lang != null
-							&& _notFoundHtmlFilesPerLanguage.ContainsKey(lang)
-							? _notFoundHtmlFilesPerLanguage[lang]
-							: _notFoundHtmlFile;
-						handler = new NotFoundDocumentHandler(notFoundFile);
+						IFileInfo notFoundFile = null;
+
+						if(lang != null)
+						{
+							_notFoundHtmlFilesPerLanguage.TryGetValue(lang, out notFoundFile);
+						}
+
+						handler = new NotFoundDocumentHandler(notFoundFile ?? _notFoundHtmlFile);
 					}
 					else
 					{
@@ -164,15 +167,17 @@ namespace MakingSense.AspNetCore.Documentation
 
 		private async Task ApplyResponseContent(HttpResponse response, IDocumentHandler handler, string lang)
 		{
-			var layoutHead = lang != null
-				&& _layoutHeadsByLanguage.ContainsKey(lang)
-				? _layoutHeadsByLanguage[lang]
-				: _defaultLayoutHead;
+			byte[] layoutHead = null;
+			byte[] layoutTail = null;
 
-			var layoutTail = lang != null
-				&& _layoutTailsByLanguage.ContainsKey(lang)
-				? _layoutTailsByLanguage[lang]
-				: _defaultLayoutTail;
+			if(lang != null)
+			{
+				_layoutHeadsByLanguage.TryGetValue(lang, out layoutHead);
+				_layoutTailsByLanguage.TryGetValue(lang, out layoutTail);
+			}
+
+			layoutHead = layoutHead ?? _defaultLayoutHead;
+			layoutTail = layoutTail ?? _defaultLayoutTail;
 
 			using (var content = handler.Open())
 			{
@@ -237,10 +242,10 @@ namespace MakingSense.AspNetCore.Documentation
 
 			foreach (var lang in _options.SupportedLanguages)
 			{
-				var pathWithoutExt = path.Substring(0, path.LastIndexOf('.'));
-				var ext = path.Substring(path.LastIndexOf('.'));
+				var pathWithoutExt = Path.GetFileNameWithoutExtension(path);
+				var ext = Path.GetExtension(path);
 
-				var fileInfo = _options.FileProvider.GetFileInfo(pathWithoutExt + $".{lang}" + ext);
+				var fileInfo = _options.FileProvider.GetFileInfo($"{pathWithoutExt}.{lang}{ext}");
 
 				if (fileInfo.Exists)
 				{
